@@ -11,35 +11,30 @@
                 <v-spacer />
               </v-toolbar>
               <v-card-text>
-                <v-form>
+                <v-form action="#" @submit.prevent="login">
                   <v-text-field
-                    label="Username"
-                    v-model="UserUsername"
-                    name="Username"
-                    prepend-icon="mdi-account"
+                    label="Email"
+                    v-model="email"
+                    name="Email"
+                    prepend-icon="mdi-email"
+                    v-validate="'required'"
                     type="text"
                   ></v-text-field>
 
                   <v-text-field
                     id="password"
-                    v-model="UserPassword"
+                    v-model="password"
                     label="Password"
                     name="password"
                     prepend-icon="mdi-lock"
+                    v-validate="'required'"
                     type="password"
                   ></v-text-field>
+                  <v-btn color="primary" text type="submit">Login</v-btn>
+                  <v-btn text disabled>or</v-btn>
+                  <v-btn color="warning" text @click="registerModal = true">Register</v-btn>
                 </v-form>
               </v-card-text>
-              <v-card-actions>
-                <v-row justify="center">
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" text>Login</v-btn>
-                    <v-btn text disabled>or</v-btn>
-                    <v-btn color="warning" text @click="registerModal = true">Register</v-btn>
-                  </v-card-actions>
-                </v-row>
-              </v-card-actions>
             </v-card>
           </v-flex>
         </v-layout>
@@ -66,10 +61,10 @@
                   <v-text-field label="Legal last name*" required></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field v-model="UserUsername" label="Username*" required></v-text-field>
+                  <v-text-field v-model="email" label="Email*" required></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field v-model="UserPassword" label="Password*" type="password" required></v-text-field>
+                  <v-text-field v-model="password" label="Password*" type="password" required></v-text-field>
                 </v-col>
                 <v-col cols="12">
                   <v-text-field label="Verify Password*" type="password" required></v-text-field>
@@ -90,13 +85,25 @@
 </template>
 <script>
 export default {
+  name: "login",
   data() {
     return {
-      testvar: true,
-      registerModal: false,
-      UserUsername: "",
-      UserPassword: ""
+      email: "",
+      password: ""
     };
+  },
+  methods: {
+    login() {
+      this.$store
+        .dispatch("retrieveToken", {
+          email: this.email,
+          password: this.password
+        })
+        .then(response => {
+          this.$router.push({ name: "home" });
+          return response
+        });
+    }
   }
 };
 </script>

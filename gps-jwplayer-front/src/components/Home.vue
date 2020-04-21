@@ -17,24 +17,32 @@
 </template>
 
 <script>
+
 export default {
-    data: () => ({
-      loading: false,
-      transition: 'scale-transition',
-      transitions: [
-        {
-          text: 'None',
-          value: undefined,
-        },
-        {
-          text: 'Fade Transition',
-          value: 'fade-transition',
-        },
-        {
-          text: 'Scale Transition',
-          value: 'scale-transition',
-        },
-      ],
-    })
-}
+  data: () => ({
+    loading: false,
+    transition: "scale-transition",
+    transitions: [
+      {
+        text: "None",
+        value: undefined
+      },
+      {
+        text: "Fade Transition",
+        value: "fade-transition"
+      },
+      {
+        text: "Scale Transition",
+        value: "scale-transition"
+      }
+    ]
+  }),
+
+  methods: {
+    
+  },
+  computed: {
+    
+  }
+};
 </script>

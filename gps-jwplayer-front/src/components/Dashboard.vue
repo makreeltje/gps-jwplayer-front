@@ -29,10 +29,31 @@
       </v-row>
       <v-card class="pa-2" outlined tile>Level 1: .col-sm-12</v-card>
     </v-col>
+    <v-snackbar v-model="generalSnack" :color="this.generalSnackColor" :top="false" :timeout="this.generalSnackTimeout">
+      {{ generalSnackText }}
+      <v-btn color="accent" text @click="generalSnack = false">Close</v-btn>
+    </v-snackbar>
   </v-row>
 </template>
 <script>
 export default {
-  
+  data() {
+    return {
+      generalSnack: false,
+      generalSnackColor: "info",
+      generalSnackText: "",
+      generalSnackTimeout: 2000
+    };
+  },
+  methods: {
+    showSnack(color, message) {
+      this.generalSnackColor = color;
+      this.generalSnackText = message;
+      this.generalSnack = true;
+    }
+  },
+  mounted() {
+    this.showSnack("info", "wollah");
+  }
 };
 </script>
