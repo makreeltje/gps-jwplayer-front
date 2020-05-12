@@ -1,16 +1,21 @@
 import Vue from 'vue';
-import Home from './components/Home.vue';
+import Router from 'vue-router';
+
+// auth
 import Login from './components/auth/Login.vue';
 import Logout from './components/auth/Logout.vue';
-import Dashboard from './components/Dashboard.vue';
+
+// views
+import Edit from './components/Edit.vue';
+import Videos from './components/Videos.vue';
 
 Vue.use(Router);
 
 const routes = [
     {
         path: '/',
-        name: 'home',
-        component: Home,
+        name: 'videos',
+        component: Videos,
         meta: {
             requiresAuth: true,
         }
@@ -24,16 +29,19 @@ const routes = [
         }
     },
     {
-        path: '/dashboard',
-        name: 'dashboard',
-        component: Dashboard
+        path: '/edit/:id',
+        name: 'Edit',
+        component: Edit,
+        meta: {
+            requiresAuth: true,
+        }
     },
     {
         path: '/logout',
         name: 'logout',
         component: Logout,
         meta: {
-            requiresVisitor: true,
+            requiresAuth: true,
         }
     },
 
