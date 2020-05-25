@@ -1,14 +1,14 @@
 <template>
   <v-layout align-center justify-center>
     <div class="flex xs12 sm4 md8 pa-md-4 mx-lg-auto">
-      <v-text-field label="Search video..." filled></v-text-field>
+      <v-text-field v-model="search" label="Search video..." filled></v-text-field>
       <v-row v-if="loading">
         <v-col v-for="n in 12" :key="n" cols="12" md="3">
           <v-skeleton-loader loading="loading" class="mx-auto" max-width="300" type="card"></v-skeleton-loader>
         </v-col>
       </v-row>
       <v-row v-if="!loading">
-        <v-col v-for="(video, index) in allVideos" :key="index" cols="12" md="3">
+        <v-col v-for="(video, index) in filteredVideos" :key="index" cols="12" md="3">
           <router-link :to="'edit/' + video.mediaid">
             <v-img :src="video.image" max-height="224.328"></v-img>
             <strong>{{ video.title }}</strong>
@@ -29,6 +29,7 @@
         data: () => ({
             loading: false,
             transition: "scale-transition",
+            search: '',
 
             transitions: [
                 {
@@ -40,7 +41,7 @@
                     value: "fade-transition"
                 },
                 {
-                    text: "Scale Transition",
+                    text: "Scale Transition", 
                     value: "scale-transition"
                 },
 
@@ -69,8 +70,12 @@
         computed: {
             allVideos() {
                 return this.$store.getters.getAllVideos
+            },
+            filteredVideos(){
+                return this.$store.getters.getAllVideos.filter(video =>{
+                  return video.title.toLowerCase().includes(this.search.toLowerCase())
+                })
             }
-
         },
         mounted() {
             this.$store.dispatch('fetchVideos')
