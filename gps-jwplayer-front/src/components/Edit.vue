@@ -1,27 +1,66 @@
 <script src="https://cdn.jwplayer.com/libraries/sbU3eHJm.js"></script>
 <template>
   <v-container>
-    <v-row justify="center">
-      <v-col sm="10">
+    <v-row>
+      <v-col cols="12">
+        <h1 class="display-3 text-center mb-3">{{video.title}}</h1>
         <v-row>
           <v-col cols="6">
             <v-select
-                    :items="caption_select"
-                    label="Overflow Btn"
-                    @change="changedCaption"
-            ></v-select>
+                    :items="caption_list"
+                    label="Choose Caption"
+                    item-text="label"
+                    @change="changeCaption">
+              <v-btn slot="append-outer" style="margin-right: 5px;">Upload vtt...</v-btn>
+              <v-btn slot="append-outer" style="margin-right: 5px;"> Auto-gen captions</v-btn>
+
+            </v-select>
+            <v-row cols="12">
+              <v-col cols="1">
+                <v-text-field></v-text-field>
+              </v-col>
+              <v-col cols="1">
+                <v-text-field></v-text-field>
+              </v-col>
+              <v-col cols="10">
+                <v-text-field></v-text-field>
+              </v-col>
+            </v-row>
+            <v-textarea
+                    v-model="captionText"
+                    rows="30"
+            ></v-textarea>
+
           </v-col>
           <v-col cols="6">
             <div id="video">This text will be replaced with a player.</div>
+            <h1 class="display-1 text-center mt-3">Video statistics</h1>
+            <v-row cols="12">
+              <v-col cols="3">
+                <p>Video title</p>
+                <p>Video duration</p>
+
+              </v-col>
+              <v-col cols="9">
+                <p>{{video.title}}</p>
+                <p>{{video.duration * 1000 | duration('humanize')}}</p>
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
         <v-card class="pa-2" outlined tile>Some grid feature</v-card>
+        <v-snackbar v-model="generalSnack" :color="this.generalSnackColor" :top="false" :timeout="this.generalSnackTimeout">
+          {{ generalSnackText }}
+          <v-btn color="accent" text @click="generalSnack = false">Close</v-btn>
+        </v-snackbar>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
+    import Vue from "vue";
+
     export default {
         data() {
             return {
@@ -29,10 +68,10 @@
                 generalSnackColor: "info",
                 generalSnackText: "",
                 generalSnackTimeout: 2000,
-                caption_select: [],
-                caption_element: [],
-                captions: null,
-                name: ''
+                caption_list: [],
+                selectedIndex: 0,
+                video: [],
+                captionText: '',
             };
         },
         methods: {
@@ -41,46 +80,48 @@
                 this.generalSnackText = message;
                 this.generalSnack = true;
             },
-            changedCaption(caption) {
-                console.log(caption)
-                this.caption_element.find(this.searchCaption(caption, this.caption_element))
-                console.log(this.caption_element.find(this.searchCaption))
+            changeCaption(label) {
+                var index = this.findWithAttr(this.caption_list, 'label', label) + 1
+                jwplayer("video").setCurrentCaptions(index)
+                this.$store.dispatch('fetchCaptions', this.video.tracks[index - 1].file)
+                .then(() => {
+                    this.captionText = this.$store.state.captionText
+                })
+                .catch(() => {
+                    this.showSnack("error", "Caption could not be loaded")
+                })
+
             },
-            searchCaption(captionArray) {
-                return captionArray.label === 'new 6';
+            findWithAttr(array, attr, value) {
+                for (var i = 0; i < array.length; i += 1) {
+                    if (array[i][attr] === value) {
+                        return i;
+                    }
+                }
+                return -1;
             }
         },
         mounted() {
-            this.showSnack("info", "Welcome " + localStorage.name);
-            this.$store.dispatch('fetchVideo', this.$route.params.id)
-            .then(() => {
-                jwplayer("video").setup({
-                    "file": this.$store.state.video.playlist[0].sources[0].file,
-                    "image": this.$store.state.video.playlist[0].image,
-                    "tracks": [{
-                        "kind": "captions",
-                        "file": '/assets/files/new6.vtt',
-                        "label": "Kutje"
-                    }]
-                });
-                // this.caption_select = this.$store.state.video.playlist[0].tracks(label => label.label)
-                this.captions = this.$store.state.video
-                // console.log(JSON.stringify(this.captions))
-                for (var i = 0; i < this.captions.playlist[0].tracks.length; i++) {
-                    console.log(this.captions.playlist[0].tracks[i].label);
-                    if (this.captions.playlist[0].tracks[i].label != null)
-                    {
-                        this.caption_select.push(this.captions.playlist[0].tracks[i].label)
-                        this.caption_element.push(this.captions.playlist[0].tracks[i])
-                    }
-
-
-                }
-                console.log(JSON.stringify(this.caption_element))
-                /*console.log(JSON.stringify(this.captions.map(caption => caption.playlist[0].tracks)))
-                this.caption_select = objArray.map(caption => this.$store.state.video.playlist[0].tracks)*/
-                }
-            )
+            Vue.loadScript("https://cdn.jwplayer.com/libraries/sbU3eHJm.js")
+                .then(() => {
+                    this.$store.dispatch('fetchVideo', this.$route.params.id)
+                        .then(() => {
+                            this.video = this.$store.state.video.playlist[0]
+                            jwplayer("video").setup({
+                                "file": this.video.sources[0].file,
+                                "image": this.video.image,
+                                "tracks": this.video.tracks
+                            });
+                            this.caption_list = this.video.tracks
+                            this.caption_list.splice(this.caption_list.length - 1, 1)
+                        })
+                        .catch(() => {
+                            this.showSnack("error", "Failed to load player")
+                        })
+                })
+                .catch(() => {
+                    this.showSnack("error", "Failed to load jwplayer")
+                })
         }
     };
 </script>

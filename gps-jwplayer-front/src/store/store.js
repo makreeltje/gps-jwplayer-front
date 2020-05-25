@@ -10,6 +10,7 @@ export const store = new Vuex.Store({
         token: localStorage.getItem('access_token') || null,
         videos: [],
         video: {},
+        captionText: '',
     },
     getters: {
         loggedIn(state) {
@@ -20,6 +21,9 @@ export const store = new Vuex.Store({
         },
         getVideo(state) {
             return state.video
+        },
+        getCaptionText(state) {
+            return state.captionText
         }
     },
     actions: {
@@ -98,7 +102,16 @@ export const store = new Vuex.Store({
                 .catch(error => {
                     console.log("Single video: " + error)
                 })
-        }
+        },
+        fetchCaptions(context, captionUrl) {
+            return axios.get(captionUrl)
+                .then(response => {
+                    context.commit('setCaptionText', response.data)
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        },
     },
     mutations: {
         destroyToken(state) {
@@ -112,6 +125,9 @@ export const store = new Vuex.Store({
         },
         setVideo(state, video) {
             state.video = video
-        }
+        },
+        setCaptionText(state, captionText) {
+            state.captionText = captionText
+        },
     },
 })

@@ -6,6 +6,7 @@ import { store } from './store/store'
 import VeeValidate from 'vee-validate';
 import vuetify from './plugins/vuetify'
 import LoadScript from 'vue-plugin-load-script';
+import VueMoment from 'vue-moment'
 
 window.eventBus = new Vue()
 
@@ -13,13 +14,8 @@ Vue.config.productionTip = false
 Vue.use(VueRouter)
 Vue.use(VeeValidate)
 Vue.use(LoadScript);
-Vue.loadScript("https://cdn.jwplayer.com/libraries/sbU3eHJm.js")
-    .then(() => {
-      console.log("succesfully loaded jwplayer")
-    })
-    .catch(() => {
-      console.log("failed to load jwplayer")
-    })
+Vue.use(VueMoment)
+
 
 
 const router = new VueRouter({

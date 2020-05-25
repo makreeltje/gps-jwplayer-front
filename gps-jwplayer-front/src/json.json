@@ -1,0 +1,19 @@
+{
+  "VttData": [
+    {
+      "start": 5,
+      "end": 6,
+      "voice": "Luc",
+      "text": "Test"
+    },
+    {
+      "start": 9,
+      "end": 15,
+      "voice": "Luc",
+      "text": "Test 2"
+    }
+  ],
+  "video_key": "x",
+  "kind": "captions",
+  "label": "test"
+}
