@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 
 Vue.use(Vuex)
-axios.defaults.baseURL = 'http://localhost:8000/api'
+axios.defaults.baseURL = process.env.VUE_APP_API_URL
 
 export const store = new Vuex.Store({
     state: {
@@ -11,6 +11,7 @@ export const store = new Vuex.Store({
         videos: [],
         video: {},
         captionText: '',
+        captionJson: []
     },
     getters: {
         loggedIn(state) {
@@ -24,6 +25,9 @@ export const store = new Vuex.Store({
         },
         getCaptionText(state) {
             return state.captionText
+        },
+        getCaptionJson(state) {
+            return state.captionJson
         }
     },
     actions: {
@@ -112,6 +116,42 @@ export const store = new Vuex.Store({
                     console.log(error)
                 })
         },
+        fetchCaptionJson(context, captionUrl) {
+            return axios.get('/GetCaption', {
+                params: {
+                    'VttLink': captionUrl
+                }
+            })
+                .then(response => {
+                    context.commit('setCaptionJson', response.data.VttData.cues)
+                    console.log(JSON.stringify(response.data.VttData.cues))
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        },
+        autoGenCaptions(context, body) {
+            return axios.post('/Transcription', {
+                filePath: body.filePath,
+                languageCode: body.languageCode,
+                videoKey: body.videoKey,
+                label: body.label,
+            })
+        },
+        uploadCaption(context, body) {
+            return axios.post('/UploadCaption', {
+                VttData: body.vttData,
+                video_key: body.videoKey,
+                kind: body.kind,
+                label: body.label,
+            })
+                .then(response => {
+                    console.log('[SUCCESS]: ' + JSON.stringify(response.data))
+                })
+                .catch(error => {
+                    console.log('[ERROR]: ' + JSON.stringify(error.data))
+                })
+        }
     },
     mutations: {
         destroyToken(state) {
@@ -129,5 +169,8 @@ export const store = new Vuex.Store({
         setCaptionText(state, captionText) {
             state.captionText = captionText
         },
+        setCaptionJson(state, captionJson) {
+            state.captionJson = captionJson
+        }
     },
 })
