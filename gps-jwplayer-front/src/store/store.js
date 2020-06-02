@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 
 Vue.use(Vuex)
-axios.defaults.baseURL = 'http://localhost:8000/api'
+axios.defaults.baseURL = process.env.VUE_APP_API_URL
 
 export const store = new Vuex.Store({
     state: {
@@ -11,6 +11,8 @@ export const store = new Vuex.Store({
         videos: [],
         video: {},
         captionText: '',
+        captionJson: [],
+        translatedCaptions: []
     },
     getters: {
         loggedIn(state) {
@@ -24,6 +26,12 @@ export const store = new Vuex.Store({
         },
         getCaptionText(state) {
             return state.captionText
+        },
+        getCaptionJson(state) {
+            return state.captionJson
+        },
+        getTranslatedCaption(state) {
+            return state.translatedCaptions
         }
     },
     actions: {
@@ -112,6 +120,67 @@ export const store = new Vuex.Store({
                     console.log(error)
                 })
         },
+        fetchCaptionJson(context, captionUrl) {
+            return axios.get('/GetCaption', {
+                params: {
+                    'VttLink': captionUrl
+                }
+            })
+                .then(response => {
+                    context.commit('setCaptionJson', response.data)
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        },
+        autoGenCaptions(context, body) {
+            return axios.post('/Transcription', {
+                filePath: body.filePath,
+                languageCode: body.languageCode,
+                videoKey: body.videoKey,
+                label: body.label,
+            })
+        },
+        uploadCaption(context, body) {
+            return axios.post('/UploadCaption', {
+                VttData: body.VttData,
+                video_key: body.video_key,
+                kind: body.kind,
+                label: body.label,
+                language: body.language
+            })
+                .then(response => {
+                    this.showSnack('success', 'The new caption will be available in 10 minutes')
+                    console.log('[SUCCESS]: ' + JSON.stringify(response.data))
+                })
+                .catch(error => {
+                    console.log('[ERROR]: ' + JSON.stringify(error.data))
+                })
+        },
+        saveEditedCaptions(context, body, lang = 'en') {
+            axios.post('/SaveCaption', {
+                VttLink: body.VttLink,
+                VttData: body.VttData,
+                label: body.label,
+                kind: 'captions',
+                language: lang
+            })
+        },
+        autoTranslateCaptions(context, translationInfo) {
+            return axios.post('/TranslateFile', {
+                VttData: translationInfo.VttData,
+                targetLanguage: translationInfo.targetLanguage,
+                kind: translationInfo.kind,
+                sourceLanguage: translationInfo.sourceLanguage,
+            })
+                .then(response => {
+                    context.commit('setTranslatedCaption', response.data)
+                    console.log('[SUCCESS]: ' + JSON.stringify(response.data))
+                })
+                .catch(error => {
+                    console.log('[ERROR]: ' + JSON.stringify(error.data))
+                })
+        }
     },
     mutations: {
         destroyToken(state) {
@@ -129,5 +198,11 @@ export const store = new Vuex.Store({
         setCaptionText(state, captionText) {
             state.captionText = captionText
         },
+        setCaptionJson(state, captionJson) {
+            state.captionJson = captionJson
+        },
+        setTranslatedCaption(state, translatedCaption) {
+            state.translatedCaptions = translatedCaption
+        }
     },
 })

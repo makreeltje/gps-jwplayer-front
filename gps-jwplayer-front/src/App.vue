@@ -76,7 +76,10 @@ export default {
   data() {
     return {};
   },
-  computed: {
+    created() {
+
+    },
+    computed: {
     loggedIn() {
       return this.$store.getters.loggedIn;
     }

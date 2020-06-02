@@ -1,35 +1,56 @@
 <script src="https://cdn.jwplayer.com/libraries/sbU3eHJm.js"></script>
 <template>
-  <v-container>
+  <v-container fluid class="px-12">
     <v-row>
       <v-col cols="12">
         <h1 class="display-3 text-center mb-3">{{video.title}}</h1>
         <v-row>
           <v-col cols="6">
             <v-select
-                    :items="caption_list"
+                    :items="captions.captionList"
                     label="Choose Caption"
                     item-text="label"
+                    solo
                     @change="changeCaption">
-              <v-btn slot="append-outer" style="margin-right: 5px;">Upload vtt...</v-btn>
-              <v-btn slot="append-outer" style="margin-right: 5px;"> Auto-gen captions</v-btn>
+              <v-btn slot="append-outer" style="margin-right: 5px;" @click="uploadCaptionModal = true">Upload
+              </v-btn>
+              <v-btn slot="append-outer" style="margin-right: 5px;" @click="autoGenModal = true"> Auto-gen
+              </v-btn>
 
             </v-select>
             <v-row cols="12">
               <v-col cols="1">
-                <v-text-field></v-text-field>
+                <p>Start</p>
               </v-col>
               <v-col cols="1">
-                <v-text-field></v-text-field>
+                <p>End</p>
               </v-col>
-              <v-col cols="10">
-                <v-text-field></v-text-field>
+              <v-col cols="1">
+                <p>Voice</p>
+              </v-col>
+              <v-col cols="9">
+                <p>Text</p>
               </v-col>
             </v-row>
-            <v-textarea
-                    v-model="captionText"
-                    rows="30"
-            ></v-textarea>
+
+            <div style="overflow-y: scroll;overflow-x: hidden; height: 600px;">
+              <v-row cols="12" v-for="(caption, index) in captions.caption.VttData.cues" :key="index">
+                <v-col cols="1">
+                  <v-text-field solo v-model="caption.start" :rules="noCommaRule"></v-text-field>
+                </v-col>
+                <v-col cols="1">
+                  <v-text-field solo v-model="caption.end" :rules="noCommaRule"></v-text-field>
+                </v-col>
+                <v-col cols="1">
+                  <v-text-field solo v-model="caption.voice"></v-text-field>
+                </v-col>
+                <v-col cols="9">
+                  <v-text-field solo v-model="caption.text"></v-text-field>
+                </v-col>
+              </v-row>
+            </div>
+            <v-btn @click="saveEditedCaptions">Save</v-btn>
+            <v-btn slot="append-outer" @click="translateModal = true" style="margin-left: 5px;">Translate</v-btn>
 
           </v-col>
           <v-col cols="6">
@@ -48,14 +69,115 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-card class="pa-2" outlined tile>Some grid feature</v-card>
-        <v-snackbar v-model="generalSnack" :color="this.generalSnackColor" :top="false" :timeout="this.generalSnackTimeout">
-          {{ generalSnackText }}
-          <v-btn color="accent" text @click="generalSnack = false">Close</v-btn>
+        <v-snackbar v-model="snack.generalSnack" :color="this.snack.generalSnackColor" :top="false"
+                    :timeout="this.snack.generalSnackTimeout">
+          {{ snack.generalSnackText }}
+          <v-btn text @click="snack.generalSnack = false" class="font-weight-bold">Close</v-btn>
         </v-snackbar>
       </v-col>
+
     </v-row>
+
+    <div class="testclass">
+      <v-dialog v-model="uploadCaptionModal" persistent max-width="600px">
+        <V-form name="form" @submit.prevent="uploadCaptions">
+          <v-card light flat color="grey lighten-2">
+            <v-toolbar color="primary" dark flat>
+              <v-spacer></v-spacer>
+              <v-toolbar-title>Auto-gen Captions</v-toolbar-title>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field v-model="uploadCaption.label" label="Caption name*" required></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-text-field v-model="uploadCaption.newLanguage" label="Language (ex. nl, en, de etc.)*" required></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+              <small>*indicates required field</small>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="uploadCaptionModal = false">Close</v-btn>
+              <v-btn color="blue darken-1" text type="submit">Upload</v-btn>
+            </v-card-actions>
+          </v-card>
+        </V-form>
+      </v-dialog>
+    </div>
+
+    <div class="testclass">
+      <v-dialog v-model="autoGenModal" persistent max-width="600px">
+        <V-form name="form" @submit.prevent="autoGenCaptions">
+          <v-card light flat color="grey lighten-2">
+            <v-toolbar color="primary" dark flat>
+              <v-spacer></v-spacer>
+              <v-toolbar-title>Auto-gen Captions</v-toolbar-title>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field v-model="autoGenCaption.label" label="Caption name*" required></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-text-field v-model="autoGenCaption.languageCode" label="Language code (ex. en-US, nl-NL)*"
+                                  required></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+              <small>*indicates required field</small>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="autoGenModal = false">Close</v-btn>
+              <v-btn color="blue darken-1" text type="submit">Auto-Gen</v-btn>
+            </v-card-actions>
+          </v-card>
+        </V-form>
+      </v-dialog>
+    </div>
+
+    <div class="testclass">
+      <v-dialog v-model="translateModal" persistent max-width="600px">
+        <V-form name="form" @submit.prevent="autoTranslateCaptions">
+          <v-card light flat color="grey lighten-2">
+            <v-toolbar color="primary" dark flat>
+              <v-spacer></v-spacer>
+              <v-toolbar-title>Auto-gen Captions</v-toolbar-title>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field v-model="translationInfo.sourceLanguage" label="Source" required></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-text-field v-model="translationInfo.targetLanguage" label="Target"
+                                  required></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+              <small>*indicates required field</small>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="translateModal = false">Close</v-btn>
+              <v-btn color="blue darken-1" text type="submit">Translate</v-btn>
+            </v-card-actions>
+          </v-card>
+        </V-form>
+      </v-dialog>
+    </div>
+
   </v-container>
+
 </template>
 
 <script>
@@ -64,33 +186,73 @@
     export default {
         data() {
             return {
-                generalSnack: false,
-                generalSnackColor: "info",
-                generalSnackText: "",
-                generalSnackTimeout: 2000,
-                caption_list: [],
+                snack: {
+                    generalSnack: false,
+                    generalSnackColor: "info",
+                    generalSnackText: "",
+                    generalSnackTimeout: 5000,
+                },
+
                 selectedIndex: 0,
                 video: [],
-                captionText: '',
-            };
+                autoGenCaption: {
+                    languageCode: '',
+                    label: '',
+                },
+                uploadCaption: {
+                    label: '',
+                    newLanguage: '',
+                },
+                autoGenModal: false,
+                uploadCaptionModal: false,
+                translateModal: false,
+                captions: {
+                    trackLabel: '',
+                    trackFile: '',
+                    captionList: [],
+                    caption: {
+                        "VttData": {
+                            "cues": []
+                        }
+                    }
+                },
+                noCommaRule:
+                    [value => {
+                        const pattern = /^[^,]+$/;
+                        return pattern.test(value) || "No comma's allowed";
+                    }, value => {
+                        const pattern = /(?<=^| )\d+(\.\d+)?(?=$| )/;
+                        return pattern.test(value) || "Only float values";
+                    }],
+                translationInfo: {
+                    targetLanguage: '',
+                    sourceLanguage: '',
+                }
+            }
+
         },
         methods: {
             showSnack(color, message) {
-                this.generalSnackColor = color;
-                this.generalSnackText = message;
-                this.generalSnack = true;
+                this.snack.generalSnackColor = color;
+                this.snack.generalSnackText = message;
+                this.snack.generalSnack = true;
+                this.snack.generalSnackTimeout = 5000;
             },
             changeCaption(label) {
-                var index = this.findWithAttr(this.caption_list, 'label', label) + 1
+                var index = this.findWithAttr(this.captions.captionList, 'label', label) + 1
                 jwplayer("video").setCurrentCaptions(index)
-                this.$store.dispatch('fetchCaptions', this.video.tracks[index - 1].file)
-                .then(() => {
-                    this.captionText = this.$store.state.captionText
-                })
-                .catch(() => {
-                    this.showSnack("error", "Caption could not be loaded")
-                })
+                this.$store.dispatch('fetchCaptionJson', this.video.tracks[index - 1].file)
+                    .then(() => {
 
+                        this.captions.trackFile = this.video.tracks[index - 1].file
+                        this.captions.trackLabel = this.video.tracks[index - 1].label
+                        this.captions.caption = this.$store.getters.getCaptionJson
+
+                        this.showSnack("success", "Caption loaded successfully")
+                    })
+                    .catch(() => {
+                        this.showSnack("error", "Caption could not be loaded")
+                    })
             },
             findWithAttr(array, attr, value) {
                 for (var i = 0; i < array.length; i += 1) {
@@ -99,6 +261,58 @@
                     }
                 }
                 return -1;
+            },
+            autoGenCaptions() {
+                this.$store.dispatch('autoGenCaptions', {
+                    filePath: this.$store.state.video.playlist[0].sources[2].file,
+                    languageCode: this.autoGenCaption.languageCode,
+                    videoKey: this.$store.state.video.playlist[0].mediaid,
+                    label: this.autoGenCaption.label,
+                })
+                    .then(() => {
+                        this.showSnack("success", "Transcription has started")
+                    })
+                    .catch(() => {
+                        this.showSnack("error", "Transcription failed")
+                    })
+            },
+            uploadCaptions() {
+                this.$store.dispatch('uploadCaption', {
+                    VttData: this.captions.caption.VttData.cues,
+                    video_key: this.$store.state.video.playlist[0].mediaid,
+                    kind: 'captions',
+                    label: this.uploadCaption.label,
+                    language: this.uploadCaption.newLanguage
+                })
+            },
+            saveEditedCaptions() {
+                this.$store.dispatch('saveEditedCaptions',
+                    {
+                        VttLink: this.captions.trackFile,
+                        VttData: this.captions.caption.VttData.cues,
+                        label: this.captions.trackLabel,
+                    })
+                    .then(() => {
+                        this.showSnack('success', 'Changes has been saved, it will take about 10 minutes')
+                    })
+                    .catch(() => {
+                        this.showSnack('error', 'Save failed')
+                    })
+            },
+            autoTranslateCaptions() {
+                this.$store.dispatch('autoTranslateCaptions',
+                    {
+                        VttData: this.captions.caption.VttData.cues,
+                        targetLanguage: this.translationInfo.targetLanguage,
+                        kind: 'captions',
+                        sourceLanguage: this.translationInfo.sourceLanguage,
+                    })
+                .then(() => {
+                    console.log(JSON.stringify(this.$store.state.translatedCaptions))
+
+                    this.captions.caption.VttData.cues = this.$store.state.translatedCaptions
+                    console.log(JSON.stringify(this.captions.caption))
+                })
             }
         },
         mounted() {
@@ -112,16 +326,16 @@
                                 "image": this.video.image,
                                 "tracks": this.video.tracks
                             });
-                            this.caption_list = this.video.tracks
-                            this.caption_list.splice(this.caption_list.length - 1, 1)
+                            this.captions.captionList = this.video.tracks
+                            this.captions.captionList.splice(this.captions.captionList.length - 1, 1)
                         })
                         .catch(() => {
                             this.showSnack("error", "Failed to load player")
                         })
                 })
                 .catch(() => {
-                    this.showSnack("error", "Failed to load jwplayer")
+                    this.showSnack("error", "Failed to load JwPlayer")
                 })
-        }
+        },
     };
 </script>
