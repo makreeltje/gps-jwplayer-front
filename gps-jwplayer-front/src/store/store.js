@@ -11,7 +11,8 @@ export const store = new Vuex.Store({
         videos: [],
         video: {},
         captionText: '',
-        captionJson: []
+        captionJson: [],
+        translatedCaptions: []
     },
     getters: {
         loggedIn(state) {
@@ -28,6 +29,9 @@ export const store = new Vuex.Store({
         },
         getCaptionJson(state) {
             return state.captionJson
+        },
+        getTranslatedCaption(state) {
+            return state.translatedCaptions
         }
     },
     actions: {
@@ -123,8 +127,7 @@ export const store = new Vuex.Store({
                 }
             })
                 .then(response => {
-                    context.commit('setCaptionJson', response.data.VttData.cues)
-                    console.log(JSON.stringify(response.data.VttData.cues))
+                    context.commit('setCaptionJson', response.data)
                 })
                 .catch(error => {
                     console.log(error)
@@ -140,12 +143,38 @@ export const store = new Vuex.Store({
         },
         uploadCaption(context, body) {
             return axios.post('/UploadCaption', {
-                VttData: body.vttData,
-                video_key: body.videoKey,
+                VttData: body.VttData,
+                video_key: body.video_key,
                 kind: body.kind,
                 label: body.label,
+                language: body.language
             })
                 .then(response => {
+                    this.showSnack('success', 'The new caption will be available in 10 minutes')
+                    console.log('[SUCCESS]: ' + JSON.stringify(response.data))
+                })
+                .catch(error => {
+                    console.log('[ERROR]: ' + JSON.stringify(error.data))
+                })
+        },
+        saveEditedCaptions(context, body, lang = 'en') {
+            axios.post('/SaveCaption', {
+                VttLink: body.VttLink,
+                VttData: body.VttData,
+                label: body.label,
+                kind: 'captions',
+                language: lang
+            })
+        },
+        autoTranslateCaptions(context, translationInfo) {
+            return axios.post('/TranslateFile', {
+                VttData: translationInfo.VttData,
+                targetLanguage: translationInfo.targetLanguage,
+                kind: translationInfo.kind,
+                sourceLanguage: translationInfo.sourceLanguage,
+            })
+                .then(response => {
+                    context.commit('setTranslatedCaption', response.data)
                     console.log('[SUCCESS]: ' + JSON.stringify(response.data))
                 })
                 .catch(error => {
@@ -171,6 +200,9 @@ export const store = new Vuex.Store({
         },
         setCaptionJson(state, captionJson) {
             state.captionJson = captionJson
+        },
+        setTranslatedCaption(state, translatedCaption) {
+            state.translatedCaptions = translatedCaption
         }
     },
 })
