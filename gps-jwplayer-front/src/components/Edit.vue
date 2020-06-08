@@ -35,10 +35,6 @@
 
             <div style="overflow-y: scroll;overflow-x: hidden; height: 600px;">
               <v-row cols="12" v-for="(caption, index) in captions.caption.VttData.cues" :key="index">
-                <v-col cols="1" align="center"
-                       justify="center">
-                  <v-icon>mdi-close</v-icon>
-                </v-col>
                 <v-col cols="1">
                   <v-text-field solo v-model="caption.start" :rules="noCommaRule"></v-text-field>
                 </v-col>
