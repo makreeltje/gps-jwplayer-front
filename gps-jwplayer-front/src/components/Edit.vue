@@ -51,6 +51,7 @@
             </div>
             <v-btn @click="saveEditedCaptions">Save</v-btn>
             <v-btn slot="append-outer" @click="translateModal = true" style="margin-left: 5px;">Translate</v-btn>
+            <v-btn slot="append-outer" @click="addCaptionLine" style="margin-left: 5px;">Add Line</v-btn>
 
           </v-col>
           <v-col cols="6">
@@ -239,6 +240,7 @@
                 this.snack.generalSnackTimeout = 5000;
             },
             changeCaption(label) {
+
                 var index = this.findWithAttr(this.captions.captionList, 'label', label) + 1
                 jwplayer("video").setCurrentCaptions(index)
                 this.$store.dispatch('fetchCaptionJson', this.video.tracks[index - 1].file)
@@ -247,6 +249,7 @@
                         this.captions.trackFile = this.video.tracks[index - 1].file
                         this.captions.trackLabel = this.video.tracks[index - 1].label
                         this.captions.caption = this.$store.getters.getCaptionJson
+                        console.log(this.captions.caption.VttData.cues)
 
                         this.showSnack("success", "Caption loaded successfully")
                     })
@@ -314,6 +317,17 @@
                     this.captions.caption.VttData.cues = this.$store.state.translatedCaptions
                     console.log(JSON.stringify(this.captions.caption))
                 })
+            },
+            addCaptionLine() {
+                this.captions.caption.VttData.cues.push(
+                    {
+                        "end": 0,
+                        "identifier": "",
+                        "start": 0,
+                        "text": "",
+                        "voice": ""
+                    }
+                )
             }
         },
         mounted() {
