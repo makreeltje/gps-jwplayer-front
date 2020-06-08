@@ -59,6 +59,7 @@
                 this.generalSnack = true;
             },
             greetUser() {
+                console.log("hoi, ik faal")
                 if (localStorage.greetUser == '0')
                 {
                     this.showSnack("info", "Welcome " + localStorage.name);
@@ -79,6 +80,7 @@
         },
         mounted() {
             this.$store.dispatch('fetchVideos')
+            this.greetUser()
         },
     };
 </script>
