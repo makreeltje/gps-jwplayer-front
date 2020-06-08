@@ -263,8 +263,9 @@
                 return -1;
             },
             autoGenCaptions() {
+                let audioFileIndex = this.findWithAttr(this.$store.state.video.playlist[0].sources, 'label', 'AAC Audio')
                 this.$store.dispatch('autoGenCaptions', {
-                    filePath: this.$store.state.video.playlist[0].sources[2].file,
+                    filePath: this.$store.state.video.playlist[0].sources[audioFileIndex].file,
                     languageCode: this.autoGenCaption.languageCode,
                     videoKey: this.$store.state.video.playlist[0].mediaid,
                     label: this.autoGenCaption.label,
