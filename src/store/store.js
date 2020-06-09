@@ -12,7 +12,8 @@ export const store = new Vuex.Store({
         video: {},
         captionText: '',
         captionJson: [],
-        translatedCaptions: []
+        translatedCaptions: [],
+        users: [],
     },
     getters: {
         loggedIn(state) {
@@ -32,6 +33,9 @@ export const store = new Vuex.Store({
         },
         getTranslatedCaption(state) {
             return state.translatedCaptions
+        },
+        getUsers(state) {
+            return state.users
         }
     },
     actions: {
@@ -123,6 +127,7 @@ export const store = new Vuex.Store({
                 })
         },
         fetchCaptionJson(context, captionUrl) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token
             return axios.get('/GetCaption', {
                 params: {
                     'VttLink': captionUrl
@@ -136,6 +141,7 @@ export const store = new Vuex.Store({
                 })
         },
         autoGenCaptions(context, body) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token
             return axios.post('/Transcription', {
                 filePath: body.filePath,
                 languageCode: body.languageCode,
@@ -144,6 +150,7 @@ export const store = new Vuex.Store({
             })
         },
         uploadCaption(context, body) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token
             return axios.post('/UploadCaption', {
                 VttData: body.VttData,
                 video_key: body.video_key,
@@ -160,6 +167,7 @@ export const store = new Vuex.Store({
                 })
         },
         saveEditedCaptions(context, body, lang = 'en') {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token
             axios.post('/SaveCaption', {
                 VttLink: body.VttLink,
                 VttData: body.VttData,
@@ -169,6 +177,7 @@ export const store = new Vuex.Store({
             })
         },
         autoTranslateCaptions(context, translationInfo) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token
             return axios.post('/TranslateFile', {
                 VttData: translationInfo.VttData,
                 targetLanguage: translationInfo.targetLanguage,
@@ -181,6 +190,47 @@ export const store = new Vuex.Store({
                 })
                 .catch(error => {
                     console.log('[ERROR]: ' + JSON.stringify(error.data))
+                })
+        },
+        fetchUsers(context) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token
+            return axios.get('/GetAllUsers')
+                .then(response => {
+                    context.commit('setUsers', response.data)
+                    console.log('[SUCCESS]: Users grabbed successfully')
+
+                })
+                .catch(error => {
+                    console.log('[ERROR]: ' + error.data)
+                })
+        },
+        updateUser(context, user) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token
+            return axios.put('/UpdateUserById', {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            })
+                .then(() => {
+                    console.log('[SUCCESS]: User updated successfully')
+                })
+                .catch(error => {
+                    console.log('[ERROR]: ' + error.data.message)
+                })
+        },
+        deleteUser(context, user) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token
+            return axios.delete('/DeleteUserById', {
+                params: {
+                    userId: user.id
+                }
+            })
+                .then(response => {
+                    console.log('[SUCCESS]: ' + response.data.message)
+                })
+                .catch(error => {
+                    console.log('[ERROR]: ' + error.data.message)
                 })
         }
     },
@@ -205,6 +255,9 @@ export const store = new Vuex.Store({
         },
         setTranslatedCaption(state, translatedCaption) {
             state.translatedCaptions = translatedCaption
+        },
+        setUsers(state, users) {
+            state.users = users
         }
     },
 })

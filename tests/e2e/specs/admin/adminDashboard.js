@@ -1,5 +1,5 @@
 module.exports = {
-    'login testuser': browser => {
+    'get users if admin': browser => {
         browser
             .init()
             .waitForElementVisible('#app')
@@ -11,6 +11,16 @@ module.exports = {
             .assert.visible('button[type=submit]')
             .click('button[type=submit]')
             .assert.urlEquals('http://localhost:8080/')
+            .useCss()
+            .assert.visible('button[name=menu]')
+            .click('button[name=menu]')
+            .pause(500)
+            .assert.elementPresent('a[href="/admin"]')
+            .click('a[href="/admin"]')
+            .waitForElementVisible('#app')
+            .assert.urlContains('/admin')
+            .assert.visible('tbody')
+            .pause(500)
             .end()
     }
 }

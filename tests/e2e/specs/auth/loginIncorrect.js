@@ -2,17 +2,16 @@ module.exports = {
     'login information incorrect': browser => {
         browser
             .init()
-            .useXpath()
-            .waitForElementVisible('//*[@id="app"]')
+            .waitForElementVisible('#app')
             .assert.titleContains('gps-jwplayer-front')
-            .assert.visible('//*[@id="input-29"]')
-            .setValue('//*[@id="input-29"]', 'wrong')
-            .assert.visible('//*[@id="password"]')
-            .setValue('//*[@id="password"]', 'information')
-            .assert.visible('//*[@id="inspire"]/div/main/div/div/div/div/div/div/form/button[1]')
-            .click('//*[@id="inspire"]/div/main/div/div/div/div/div/div/form/button[1]')
-            .assert.visible('//*[@id="inspire"]/div/div/div[2]/div/div')
-            .assert.containsText('//*[@id="inspire"]/div/div/div[2]/div/div', 'The given data was invalid')
+            .assert.visible('input[type=username]')
+            .setValue('input[type=username]', 'wrong')
+            .assert.visible('input[type=password]')
+            .setValue('input[type=password]', 'credentials')
+            .assert.visible('button[type=submit]')
+            .click('button[type=submit]')
+            .assert.visible('.v-snack')
+            .assert.containsText('.v-snack', 'The given data was invalid')
             .end()
     }
 }
