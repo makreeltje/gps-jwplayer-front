@@ -119,6 +119,7 @@
 </template>
 
 <script>
+    import axios from 'axios'
     export default {
         data() {
             return {
@@ -126,13 +127,25 @@
                 user: localStorage.getItem('name')
             };
         },
-        created() {
-
-        },
         computed: {
             loggedIn() {
                 return this.$store.getters.loggedIn;
             }
+        },
+        created() {
+            axios.interceptors.response.use(
+                response => response,
+                error => {
+                    const status = error.response.status;
+                    if (status === 401) {
+                        this.$router.push("/logout");
+                    }
+                    if (status === 403) {
+                        alert('You do not have permissions for this action')
+                    }
+                    return Promise.reject(error);
+                }
+            );
         }
     };
 </script>

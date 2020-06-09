@@ -5,9 +5,9 @@
 
   <testsuite name="dashboard.getVideos"
     errors="0" failures="0" hostname="" id="" package="dashboard" skipped="0"
-    tests="1" time="3.236" timestamp="">
+    tests="1" time="2.719" timestamp="">
   
-    <testcase name="check if videos load in browser" classname="dashboard.getVideos" time="3.236" assertions="8">
+    <testcase name="check if videos load in browser" classname="dashboard.getVideos" time="2.719" assertions="8">
 
     
 
