@@ -313,6 +313,7 @@
                     })
                 .then(() => {
                     console.log(JSON.stringify(this.$store.state.translatedCaptions))
+                    this.translateModal = false
 
                     this.captions.caption.VttData.cues = this.$store.state.translatedCaptions
                     console.log(JSON.stringify(this.captions.caption))

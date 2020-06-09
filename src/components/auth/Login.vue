@@ -18,7 +18,7 @@
                           name="Email"
                           prepend-icon="mdi-email"
                           v-validate="'required'"
-                          type="text"
+                          type="username"
                   ></v-text-field>
 
                   <v-text-field

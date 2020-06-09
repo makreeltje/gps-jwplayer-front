@@ -5,9 +5,9 @@
 
   <testsuite name="auth.registerRandomUser"
     errors="0" failures="0" hostname="" id="" package="auth" skipped="0"
-    tests="1" time="5.801" timestamp="">
+    tests="1" time="3.635" timestamp="">
   
-    <testcase name="register known account" classname="auth.registerRandomUser" time="5.801" assertions="6">
+    <testcase name="register known account" classname="auth.registerRandomUser" time="3.635" assertions="6">
 
     
 
