@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites errors="0"
+            failures="0"
+            tests="1">
+
+  <testsuite name="edit.openVideo"
+    errors="0" failures="0" hostname="" id="" package="edit" skipped="0"
+    tests="1" time="3.349" timestamp="">
+  
+    <testcase name="open video" classname="edit.openVideo" time="3.349" assertions="10">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    </testcase>
+  
+
+  
+
+    
+
+  
+  </testsuite>
+</testsuites>

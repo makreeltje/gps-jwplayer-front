@@ -44,13 +44,14 @@
                 <v-col cols="1">
                   <v-text-field solo v-model="caption.voice"></v-text-field>
                 </v-col>
-                <v-col cols="9">
+                <v-col cols="8">
                   <v-text-field solo v-model="caption.text"></v-text-field>
                 </v-col>
               </v-row>
             </div>
             <v-btn @click="saveEditedCaptions">Save</v-btn>
             <v-btn slot="append-outer" @click="translateModal = true" style="margin-left: 5px;">Translate</v-btn>
+            <v-btn slot="append-outer" @click="addCaptionLine" style="margin-left: 5px;">Add Line</v-btn>
 
           </v-col>
           <v-col cols="6">
@@ -239,6 +240,7 @@
                 this.snack.generalSnackTimeout = 5000;
             },
             changeCaption(label) {
+
                 var index = this.findWithAttr(this.captions.captionList, 'label', label) + 1
                 jwplayer("video").setCurrentCaptions(index)
                 this.$store.dispatch('fetchCaptionJson', this.video.tracks[index - 1].file)
@@ -247,6 +249,7 @@
                         this.captions.trackFile = this.video.tracks[index - 1].file
                         this.captions.trackLabel = this.video.tracks[index - 1].label
                         this.captions.caption = this.$store.getters.getCaptionJson
+                        console.log(this.captions.caption.VttData.cues)
 
                         this.showSnack("success", "Caption loaded successfully")
                     })
@@ -263,8 +266,9 @@
                 return -1;
             },
             autoGenCaptions() {
+                let audioFileIndex = this.findWithAttr(this.$store.state.video.playlist[0].sources, 'label', 'AAC Audio')
                 this.$store.dispatch('autoGenCaptions', {
-                    filePath: this.$store.state.video.playlist[0].sources[2].file,
+                    filePath: this.$store.state.video.playlist[0].sources[audioFileIndex].file,
                     languageCode: this.autoGenCaption.languageCode,
                     videoKey: this.$store.state.video.playlist[0].mediaid,
                     label: this.autoGenCaption.label,
@@ -313,6 +317,17 @@
                     this.captions.caption.VttData.cues = this.$store.state.translatedCaptions
                     console.log(JSON.stringify(this.captions.caption))
                 })
+            },
+            addCaptionLine() {
+                this.captions.caption.VttData.cues.push(
+                    {
+                        "end": 0,
+                        "identifier": "",
+                        "start": 0,
+                        "text": "",
+                        "voice": ""
+                    }
+                )
             }
         },
         mounted() {

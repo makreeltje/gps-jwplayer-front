@@ -49,6 +49,8 @@ export const store = new Vuex.Store({
                         })
                         .catch(error => {
                             localStorage.removeItem('access_token')
+                            localStorage.removeItem('name')
+                            localStorage.removeItem('greetUser')
                             context.commit('destroyToken')
                             reject(error)
                         })
