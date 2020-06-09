@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites errors="1"
+            failures="0"
+            tests="1">
+
+  <testsuite name="edit.translateCaption"
+    errors="1" failures="0" hostname="" id="" package="edit" skipped="0"
+    tests="1" time="4.240" timestamp="">
+  
+    <testcase name="open video" classname="edit.translateCaption" time="4.240" assertions="12">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <error message="Error while running &#34;click&#34; command: &#34;Error: click method expects 2 (or 3 if using implicit &#34;css selector&#34; strategy) arguments - 0 given.
+&#34;" type="error"><![CDATA[
+    Error
+    at Object.open video (D:\Git\gps-jwplayer-front\gps-jwplayer-front\tests\e2e\specs\edit\translateCaption.js:26:14)
+    at Context.call (D:\Git\gps-jwplayer-front\gps-jwplayer-front\node_modules\nightwatch\lib\testsuite\context.js:379:35)
+    at TestCase.run (D:\Git\gps-jwplayer-front\gps-jwplayer-front\node_modules\nightwatch\lib\testsuite\testcase.js:49:31)
+    at Runnable.__runFn (D:\Git\gps-jwplayer-front\gps-jwplayer-front\node_modules\nightwatch\lib\testsuite\index.js:376:80)
+    at Runnable.run (D:\Git\gps-jwplayer-front\gps-jwplayer-front\node_modules\nightwatch\lib\testsuite\runnable.js:123:21)
+    at TestSuite.createRunnable (D:\Git\gps-jwplayer-front\gps-jwplayer-front\node_modules\nightwatch\lib\testsuite\index.js:443:33)
+    at TestSuite.handleRunnable (D:\Git\gps-jwplayer-front\gps-jwplayer-front\node_modules\nightwatch\lib\testsuite\index.js:448:18)
+    at D:\Git\gps-jwplayer-front\gps-jwplayer-front\node_modules\nightwatch\lib\testsuite\index.js:376:21
+    at processTicksAndRejections (internal/process/task_queues.js:97:5)
+    at async DefaultRunner.runTestSuite (D:\Git\gps-jwplayer-front\gps-jwplayer-front\node_modules\nightwatch\lib\runner\test-runners\default.js:68:7)
+    ]]></error>
+    
+    </testcase>
+  
+
+  
+    <system-err>
+        Error: Error while running &#34;click&#34; command: &#34;Error: click method expects 2 (or 3 if using implicit &#34;css selector&#34; strategy) arguments - 0 given.
+  &#34;
+       at Object.open video (D:\Git\gps-jwplayer-front\gps-jwplayer-front\tests\e2e\specs\edit\translateCaption.js:26:14)
+       at processTicksAndRejections (internal/process/task_queues.js:97:5)
+    </system-err>
+  
+
+    
+
+  
+  </testsuite>
+</testsuites>
