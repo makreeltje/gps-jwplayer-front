@@ -8,6 +8,7 @@ import Logout from './components/auth/Logout.vue';
 // views
 import Edit from './components/Edit.vue';
 import Videos from './components/Videos.vue';
+import Admin from './components/Admin.vue';
 
 Vue.use(Router);
 
@@ -40,6 +41,14 @@ const routes = [
         path: '/logout',
         name: 'logout',
         component: Logout,
+        meta: {
+            requiresAuth: true,
+        }
+    },
+    {
+        path: '/admin',
+        name: 'admin',
+        component: Admin,
         meta: {
             requiresAuth: true,
         }
