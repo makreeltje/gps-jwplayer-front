@@ -5,9 +5,9 @@
 
   <testsuite name="edit.selectCaption"
     errors="0" failures="0" hostname="" id="" package="edit" skipped="0"
-    tests="1" time="4.295" timestamp="">
+    tests="1" time="5.460" timestamp="">
   
-    <testcase name="open video" classname="edit.selectCaption" time="4.295" assertions="12">
+    <testcase name="open video" classname="edit.selectCaption" time="5.460" assertions="12">
 
     
 

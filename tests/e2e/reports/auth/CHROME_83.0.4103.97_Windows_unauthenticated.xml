@@ -5,9 +5,9 @@
 
   <testsuite name="auth.unauthenticated"
     errors="0" failures="0" hostname="" id="" package="auth" skipped="0"
-    tests="1" time="0.8460" timestamp="">
+    tests="1" time="0.7970" timestamp="">
   
-    <testcase name="check if page reverts back to login when not authenticated" classname="auth.unauthenticated" time="0.8460" assertions="2">
+    <testcase name="check if page reverts back to login when not authenticated" classname="auth.unauthenticated" time="0.7970" assertions="2">
 
     
 
@@ -15,6 +15,17 @@
     </testcase>
   
 
+  
+    <system-err>
+        NoSuchElementError: An error occurred while running .click() command on &lt;//*[@id=&#34;list-item-83-0&#34;]&gt;: 
+   {&#34;sessionId&#34;:&#34;700a6b8378de21e8937bb49bec18c2d2&#34;,&#34;status&#34;:0,&#34;value&#34;:[]}
+       at runMicrotasks (&lt;anonymous&gt;)
+       at processTicksAndRejections (internal/process/task_queues.js:97:5)
+  NoSuchElementError: An error occurred while running .isVisible() command on &lt;//*[@id=&#34;app&#34;]/div[1]/div[2]/main/div/div/div[1]/div/div[2]&gt;: 
+   {&#34;sessionId&#34;:&#34;700a6b8378de21e8937bb49bec18c2d2&#34;,&#34;status&#34;:0,&#34;value&#34;:[]}
+       at runMicrotasks (&lt;anonymous&gt;)
+       at processTicksAndRejections (internal/process/task_queues.js:97:5)
+    </system-err>
   
 
     
